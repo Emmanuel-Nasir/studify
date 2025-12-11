@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzes - Studify</title>
+    <meta name="Emmanuel Nasir" content="Studify">
+    <link rel="stylesheet" href="styles/studify.css">
+    <link rel="stylesheet" href="styles/studify-extended.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+
+<nav class="nav">
+    <a href="dashboard.html" class="nav-brand">Studify</a>
+    <ul class="nav-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="planner.html">Planner</a></li>
+        <li><a href="quizzes.html" class="active">Quizzes</a></li>
+        <li><a href="quotes.html">Quotes</a></li>
+    </ul>
+    <div class="nav-user">
+        <span class="nav-user-name" id="user-name">Student</span>
+        <button class="btn btn-logout" id="logout-btn">Logout</button>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Quiz Center</h1>
+    <p class="page-subtitle">Test your knowledge with interactive quizzes</p>
+
+    <div id="setup-view" class="mt-24">
+        <div class="card center-card">
+            <h3 class="card-title" style="margin-bottom: 20px;">Create Your Quiz</h3>
+            
+            <div class="field">
+                <label for="quiz-category">Category</label>
+                <select id="quiz-category">
+                    <option value="">Any Category</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="field">
+                    <label for="quiz-difficulty">Difficulty</label>
+                    <select id="quiz-difficulty">
+                        <option value="">Any Difficulty</option>
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="quiz-amount">Questions</label>
+                    <select id="quiz-amount">
+                        <option value="5">5 Questions</option>
+                        <option value="10" selected>10 Questions</option>
+                        <option value="15">15 Questions</option>
+                        <option value="20">20 Questions</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary full-width" id="start-quiz-btn">
+                Start Quiz
+            </button>
+        </div>
+
+        <div class="card center-card mt-24">
+            <h3 class="card-title" style="margin-bottom: 16px;">Browse Categories</h3>
+            <div id="categories-grid" class="categories-grid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading categories...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="quiz-view" class="hidden mt-24">
+        <div class="card center-card">
+            <div class="progress-bar">
+                <div class="progress-fill" id="quiz-progress"></div>
+            </div>
+            
+            <div class="meta-row">
+                <p>Question <span id="current-question">1</span> of <span id="total-questions">10</span></p>
+                <p>Score: <span id="current-score">0</span></p>
+            </div>
+
+            <div id="question-container"></div>
+        </div>
+    </div>
+
+    <div id="results-view" class="hidden mt-24">
+        <div class="card center-card results-card">
+            <div id="results-emoji" class="results-emoji">🎉</div>
+            <h2>Quiz Complete!</h2>
+            <p class="results-score">
+                Score: <span id="final-score">0</span>/<span id="final-total">0</span>
+            </p>
+            <p class="results-percentage">
+                <span id="percentage">0</span>% Correct
+            </p>
+            
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button class="btn btn-primary" id="retry-quiz-btn">Try Again</button>
+                <button class="btn btn-ghost" id="new-quiz-btn">New Quiz</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="scripts/storage.js"></script>
+<script src="scripts/utils.js"></script>
+<script src="scripts/api.js"></script>
+<script src="scripts/quiz.js"></script>
+
+</body>
+</html>

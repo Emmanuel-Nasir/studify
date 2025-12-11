@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Planner - Studify</title>
+    <meta name="Emmanuel Nasir" content="Studify">
+    <link rel="stylesheet" href="styles/studify.css">
+    <link rel="stylesheet" href="styles/studify-extended.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+
+<nav class="nav">
+    <a href="dashboard.html" class="nav-brand">Studify</a>
+    <ul class="nav-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="planner.html" class="active">Planner</a></li>
+        <li><a href="quizzes.html">Quizzes</a></li>
+        <li><a href="quotes.html">Quotes</a></li>
+    </ul>
+    <div class="nav-user">
+        <span class="nav-user-name" id="user-name">Student</span>
+        <button class="btn btn-logout" id="logout-btn">Logout</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Study Planner</h1>
+            <p class="page-subtitle">Organize your study sessions</p>
+        </div>
+        <div class="tool-group">
+            <button class="btn btn-ghost" id="export-btn">Export</button>
+            <button class="btn btn-ghost" id="import-btn">Import</button>
+            <input type="file" id="import-file" accept=".json" class="hidden">
+            <button class="btn btn-primary" id="add-session-btn">+ Add Session</button>
+        </div>
+    </div>
+
+    <div class="mt-24">
+        <input 
+            type="text" 
+            id="search-sessions" 
+            placeholder="Search sessions by title or subject..." 
+            class="search-input"
+        >
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Your Study Sessions</h3>
+            <select id="filter-sessions" class="inline-select">
+                <option value="all">All Sessions</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="today">Today</option>
+                <option value="past">Past</option>
+            </select>
+        </div>
+        <ul class="session-list" id="sessions-list">
+            <li class="loading">
+                <div class="spinner"></div>
+                <p>Loading sessions...</p>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="modal" id="session-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modal-title">Add Study Session</h2>
+            <button class="btn-icon btn-icon-lg" id="close-modal">×</button>
+        </div>
+        
+        <form id="session-form">
+            <div class="field">
+                <label for="session-title">Session Title</label>
+                <input type="text" id="session-title" placeholder="e.g., Math Review" required>
+            </div>
+
+            <div class="field">
+                <label for="session-subject">Subject</label>
+                <input type="text" id="session-subject" placeholder="e.g., Mathematics" required>
+            </div>
+
+            <div class="form-row">
+                <div class="field">
+                    <label for="session-date">Date</label>
+                    <input type="date" id="session-date" required>
+                </div>
+                <div class="field">
+                    <label for="session-time">Time</label>
+                    <input type="time" id="session-time" required>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="session-duration">Duration (minutes)</label>
+                <input type="number" id="session-duration" placeholder="60" min="15" max="480" required>
+            </div>
+
+            <div class="field">
+                <label for="session-notes">Notes (optional)</label>
+                <textarea id="session-notes" placeholder="Any additional details..." rows="3"></textarea>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary full">Save Session</button>
+                <button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="scripts/storage.js"></script>
+<script src="scripts/utils.js"></script>
+<script src="scripts/planner.js"></script>
+
+</body>
+</html>

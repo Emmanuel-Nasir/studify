@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotes - Studify</title>
+    <meta name="Emmanuel Nasir" content="Studify">
+    <link rel="stylesheet" href="styles/studify.css">
+    <link rel="stylesheet" href="styles/studify-extended.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+
+<nav class="nav">
+    <a href="dashboard.html" class="nav-brand">Studify</a>
+    <ul class="nav-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="planner.html">Planner</a></li>
+        <li><a href="quizzes.html">Quizzes</a></li>
+        <li><a href="quotes.html" class="active">Quotes</a></li>
+    </ul>
+    <div class="nav-user">
+        <span class="nav-user-name" id="user-name">Student</span>
+        <button class="btn btn-logout" id="logout-btn">Logout</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Motivational Quotes</h1>
+            <p class="page-subtitle">Get inspired to study and achieve your goals</p>
+        </div>
+        <button class="btn btn-primary refresh-btn" id="refresh-quotes-btn">🔄 Get New Quotes</button>
+    </div>
+
+    <div class="card quote-card">
+        <h3>Quote of the Day</h3>
+        <p class="quote-text" id="daily-quote-text">Loading...</p>
+        <p class="quote-author" id="daily-quote-author"></p>
+    </div>
+
+    <div id="quotes-grid" class="grid-cards">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading quotes...</p>
+        </div>
+    </div>
+</div>
+
+<script src="scripts/storage.js"></script>
+<script src="scripts/utils.js"></script>
+<script src="scripts/api.js"></script>
+<script src="scripts/quotes.js"></script>
+
+</body>
+</html>

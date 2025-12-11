@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Studify</title>
+    <meta name="Emmanuel Nasir" content="Studify">
+    <meta name="description" content="Your study dashboard">
+    <link rel="stylesheet" href="styles/studify.css">
+    <link rel="stylesheet" href="styles/studify-extended.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
+</head>
+<body style="display: block; align-items: stretch; padding: 0;">
+
+<nav class="nav">
+    <a href="dashboard.html" class="nav-brand">Studify</a>
+    <ul class="nav-links">
+        <li><a href="dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="planner.html">Planner</a></li>
+        <li><a href="quizzes.html">Quizzes</a></li>
+        <li><a href="quotes.html">Quotes</a></li>
+    </ul>
+    <div class="nav-user">
+        <span class="nav-user-name" id="user-name">Student</span>
+        <button class="btn btn-logout" id="logout-btn">Logout</button>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Welcome Back, <span id="welcome-name">Student</span>!</h1>
+    <p style="color: #666; margin-top: 8px;">Here's your study overview for today</p>
+
+    <div class="dashboard-grid">
+        <div class="card quote-card" id="quote-card">
+            <p class="quote-text" id="quote-text">Loading your daily motivation...</p>
+            <p class="quote-author" id="quote-author"></p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Today's Sessions</h3>
+                <a href="planner.html" class="btn btn-ghost" style="font-size: 0.85rem; padding: 6px 12px;">View All</a>
+            </div>
+            <ul class="session-list" id="today-sessions">
+                <li class="empty-state">
+                    <div class="empty-state-icon">📚</div>
+                    <p>No sessions scheduled for today</p>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Quick Actions</h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <a href="planner.html" class="btn btn-primary" style="text-decoration: none;">📅 Add Study Session</a>
+                <a href="quizzes.html" class="btn btn-accent" style="text-decoration: none;">🎯 Take a Quiz</a>
+                <a href="quotes.html" class="btn btn-ghost" style="text-decoration: none;">💭 Get Inspired</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Your Stats</h3>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <h2 class="stat-value" id="stat-total-sessions">0</h2>
+                    <p class="stat-label">Total Sessions</p>
+                </div>
+                <div class="stat-box">
+                    <h2 class="stat-value" id="stat-completed">0</h2>
+                    <p class="stat-label">Completed</p>
+                </div>
+                <div class="stat-box">
+                    <h2 class="stat-value" id="stat-upcoming">0</h2>
+                    <p class="stat-label">Upcoming</p>
+                </div>
+                <div class="stat-box">
+                    <h2 class="stat-value" id="stat-quizzes">0</h2>
+                    <p class="stat-label">Quizzes Taken</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="scripts/storage.js"></script>
+<script src="scripts/utils.js"></script>
+<script src="scripts/api.js"></script>
+<script src="scripts/dashboard.js"></script>
+
+</body>
+</html>
