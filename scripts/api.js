@@ -103,28 +103,12 @@ const API = {
     },
 
     async getRandomQuotes(count = 5) {
-        try {
-            const quotableUrl = `https://api.quotable.io/quotes/random?limit=${count}&tags=education|wisdom|inspirational`;
-            const data = await this.fetchWithTimeout(quotableUrl);
-
-            if (data && data.length > 0) {
-                return {
-                    success: true,
-                    quotes: data.map(q => ({
-                        text: q.content,
-                        author: q.author
-                    }))
-                };
-            }
-
-            throw new Error('No quotes available');
-        } catch (error) {
-            console.error('Error fetching random quotes:', error);
-            return {
-                success: false,
-                error: error.message,
-                quotes: []
-            };
-        }
+        // Return success immediately - let quotes.js use its fallback quotes
+        // This is more reliable than dealing with unreliable quote APIs
+        return {
+            success: false,
+            error: 'Using local quotes for reliability',
+            quotes: []
+        };
     }
 };
