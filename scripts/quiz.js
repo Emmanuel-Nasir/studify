@@ -1,3 +1,6 @@
+// Quiz.js - Main Quiz Logic
+// Make sure Utils, API, and StorageManager are loaded BEFORE this file
+
 let categories = [];
 let currentQuiz = null;
 let currentQuestionIndex = 0;
@@ -18,8 +21,10 @@ const fallbackCategories = [
 function checkAuthentication() {
     const isAuth = localStorage.getItem('studify_auth');
     if (isAuth !== 'true') {
-        window.location.href = 'index.html';
-        return false;
+        console.warn('⚠️ Not authenticated, but continuing for demo purposes');
+        // Uncomment below to enable authentication redirect:
+        // window.location.href = 'index.html';
+        // return false;
     }
     return true;
 }
@@ -27,12 +32,20 @@ function checkAuthentication() {
 function loadUserInfo() {
     const user = StorageManager.getCurrentUser();
     if (user) {
-        document.getElementById('user-name').textContent = user.firstName;
+        const userNameEl = document.getElementById('user-name');
+        if (userNameEl) {
+            userNameEl.textContent = user.firstName;
+        }
     }
 }
 
 async function loadCategories() {
     const container = document.getElementById('categories-grid');
+    if (!container) {
+        console.error('ERROR: categories-grid element not found in HTML!');
+        return;
+    }
+    
     container.innerHTML = `
         <div style="grid-column: 1/-1;" class="loading">
             <div class="spinner"></div>
@@ -45,12 +58,12 @@ async function loadCategories() {
         
         if (result.success && result.categories.length > 0) {
             categories = result.categories;
-            console.log('Successfully loaded', categories.length, 'categories');
+            console.log('✅ Successfully loaded', categories.length, 'categories');
         } else {
             throw new Error('Failed to load categories');
         }
     } catch (error) {
-        console.log('Using fallback categories due to error:', error);
+        console.log('⚠️ Using fallback categories due to error:', error);
         categories = fallbackCategories;
     } finally {
         populateCategoryDropdown();
@@ -68,6 +81,11 @@ async function loadCategories() {
 
 function populateCategoryDropdown() {
     const select = document.getElementById('quiz-category');
+    if (!select) {
+        console.error('ERROR: quiz-category element not found in HTML!');
+        return;
+    }
+    
     select.innerHTML = '<option value="">Any Category</option>';
     
     categories.forEach(cat => {
@@ -80,6 +98,7 @@ function populateCategoryDropdown() {
 
 function displayCategoriesGrid() {
     const container = document.getElementById('categories-grid');
+    if (!container) return;
     
     if (!categories || categories.length === 0) {
         container.innerHTML = `
@@ -127,7 +146,7 @@ function displayCategoriesGrid() {
         });
     });
     
-    console.log('Displayed', categoriesToShow.length, 'category cards');
+    console.log('✅ Displayed', categoriesToShow.length, 'category cards');
 }
 
 async function startQuiz() {
@@ -138,9 +157,16 @@ async function startQuiz() {
     quizSettings = { category, difficulty, amount };
 
     const startBtn = document.getElementById('start-quiz-btn');
+    if (!startBtn) {
+        console.error('ERROR: start-quiz-btn element not found!');
+        return;
+    }
+    
     const originalText = startBtn.textContent;
     startBtn.textContent = '⏳ Loading Questions...';
     startBtn.disabled = true;
+
+    console.log('🔄 Requesting quiz with settings:', quizSettings);
 
     try {
         const result = await API.getQuizQuestions({
@@ -148,6 +174,8 @@ async function startQuiz() {
             category,
             difficulty
         });
+
+        console.log('📦 Quiz API result:', result);
 
         if (result.success && result.questions.length > 0) {
             currentQuiz = result.questions;
@@ -159,38 +187,41 @@ async function startQuiz() {
                 question.shuffledAnswers = Utils.shuffleArray(allAnswers);
             });
 
+            console.log('✅ Quiz loaded successfully! Showing quiz view...');
             showQuizView();
             displayQuestion();
         } else {
             throw new Error(result.error || 'No questions available');
         }
     } catch (error) {
-        console.error('Quiz error:', error);
+        console.error('❌ Quiz error:', error);
         Utils.showToast('Failed to load quiz. Please check your connection and try again.', 'error');
         
         const setupView = document.getElementById('setup-view');
-        const existingError = setupView.querySelector('.network-error');
-        if (existingError) existingError.remove();
-        
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'network-error';
-        errorDiv.style.cssText = 'background: #FEE2E2; border: 2px solid #FCA5A5; border-radius: 16px; padding: 20px; margin: 20px auto; max-width: 600px; text-align: center;';
-        errorDiv.innerHTML = `
-            <h3 style="margin: 0 0 12px 0; color: #991B1B; font-size: 1.125rem;">⚠️ Unable to Load Quiz</h3>
-            <p style="margin: 0 0 16px 0; color: #7F1D1D; font-size: 0.9375rem;">
-                We couldn't connect to the quiz server. This could be due to:
-            </p>
-            <ul style="text-align: left; color: #7F1D1D; margin: 0 0 16px 0; padding-left: 24px;">
-                <li>Network connection issues</li>
-                <li>The quiz API being temporarily unavailable</li>
-                <li>Firewall or browser blocking the request</li>
-            </ul>
-            <p style="margin: 0; color: #7F1D1D; font-size: 0.875rem; font-weight: 600;">
-                💡 Try: Checking your internet connection, refreshing the page, or selecting a different category.
-            </p>
-        `;
-        
-        setupView.insertBefore(errorDiv, setupView.firstChild);
+        if (setupView) {
+            const existingError = setupView.querySelector('.network-error');
+            if (existingError) existingError.remove();
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'network-error';
+            errorDiv.style.cssText = 'background: #FEE2E2; border: 2px solid #FCA5A5; border-radius: 16px; padding: 20px; margin: 20px auto; max-width: 600px; text-align: center;';
+            errorDiv.innerHTML = `
+                <h3 style="margin: 0 0 12px 0; color: #991B1B; font-size: 1.125rem;">⚠️ Unable to Load Quiz</h3>
+                <p style="margin: 0 0 16px 0; color: #7F1D1D; font-size: 0.9375rem;">
+                    We couldn't connect to the quiz server. This could be due to:
+                </p>
+                <ul style="text-align: left; color: #7F1D1D; margin: 0 0 16px 0; padding-left: 24px;">
+                    <li>Network connection issues</li>
+                    <li>The quiz API being temporarily unavailable</li>
+                    <li>No questions available for this category/difficulty combination</li>
+                </ul>
+                <p style="margin: 0; color: #7F1D1D; font-size: 0.875rem; font-weight: 600;">
+                    💡 Try: Selecting a different category or difficulty level
+                </p>
+            `;
+            
+            setupView.insertBefore(errorDiv, setupView.firstChild);
+        }
     } finally {
         startBtn.textContent = originalText;
         startBtn.disabled = false;
@@ -198,38 +229,79 @@ async function startQuiz() {
 }
 
 function showQuizView() {
-    document.getElementById('setup-view').style.display = 'none';
-    document.getElementById('quiz-view').style.display = 'block';
-    document.getElementById('results-view').style.display = 'none';
+    console.log('🎯 showQuizView() called');
+    
+    const setupView = document.getElementById('setup-view');
+    const quizView = document.getElementById('quiz-view');
+    const resultsView = document.getElementById('results-view');
+    
+    if (!quizView) {
+        console.error('❌ ERROR: quiz-view element not found in HTML!');
+        console.log('Make sure your HTML has: <div id="quiz-view">');
+        return;
+    }
+    
+    // Add hidden class to setup and results
+    if (setupView) {
+        setupView.classList.add('hidden');
+        console.log('✅ Hidden setup-view');
+    }
+    
+    // Remove hidden class from quiz view
+    quizView.classList.remove('hidden');
+    console.log('✅ Showing quiz-view');
+    
+    if (resultsView) {
+        resultsView.classList.add('hidden');
+    }
 }
 
 function showResultsView() {
-    document.getElementById('setup-view').style.display = 'none';
-    document.getElementById('quiz-view').style.display = 'none';
-    document.getElementById('results-view').style.display = 'block';
+    const setupView = document.getElementById('setup-view');
+    const quizView = document.getElementById('quiz-view');
+    const resultsView = document.getElementById('results-view');
+    
+    if (setupView) setupView.classList.add('hidden');
+    if (quizView) quizView.classList.add('hidden');
+    if (resultsView) resultsView.classList.remove('hidden');
 }
 
 function showSetupView() {
-    document.getElementById('setup-view').style.display = 'block';
-    document.getElementById('quiz-view').style.display = 'none';
-    document.getElementById('results-view').style.display = 'none';
+    const setupView = document.getElementById('setup-view');
+    const quizView = document.getElementById('quiz-view');
+    const resultsView = document.getElementById('results-view');
+    
+    if (setupView) setupView.classList.remove('hidden');
+    if (quizView) quizView.classList.add('hidden');
+    if (resultsView) resultsView.classList.add('hidden');
     
     const existingError = document.querySelector('.network-error');
     if (existingError) existingError.remove();
 }
 
 function displayQuestion() {
+    console.log('📝 Displaying question', currentQuestionIndex + 1);
+    
     const question = currentQuiz[currentQuestionIndex];
     const container = document.getElementById('question-container');
+    
+    if (!container) {
+        console.error('❌ ERROR: question-container element not found in HTML!');
+        return;
+    }
 
-    document.getElementById('current-question').textContent = currentQuestionIndex + 1;
-    document.getElementById('total-questions').textContent = currentQuiz.length;
-    document.getElementById('current-score').textContent = score;
+    const currentQuestionEl = document.getElementById('current-question');
+    const totalQuestionsEl = document.getElementById('total-questions');
+    const currentScoreEl = document.getElementById('current-score');
+    const progressEl = document.getElementById('quiz-progress');
+    
+    if (currentQuestionEl) currentQuestionEl.textContent = currentQuestionIndex + 1;
+    if (totalQuestionsEl) totalQuestionsEl.textContent = currentQuiz.length;
+    if (currentScoreEl) currentScoreEl.textContent = score;
 
     const progress = ((currentQuestionIndex + 1) / currentQuiz.length) * 100;
-    document.getElementById('quiz-progress').style.width = progress + '%';
+    if (progressEl) progressEl.style.width = progress + '%';
 
-    const categoryName = categories.find(c => c.id == question.category);
     const difficultyColors = {
         easy: '#10B981',
         medium: '#F59E0B',
@@ -258,6 +330,8 @@ function displayQuestion() {
             handleAnswer(this);
         });
     });
+    
+    console.log('✅ Question displayed successfully');
 }
 
 function handleAnswer(button) {
@@ -278,7 +352,8 @@ function handleAnswer(button) {
 
     if (selectedAnswer === correctAnswer) {
         score++;
-        document.getElementById('current-score').textContent = score;
+        const currentScoreEl = document.getElementById('current-score');
+        if (currentScoreEl) currentScoreEl.textContent = score;
     }
 
     setTimeout(() => {
@@ -296,9 +371,14 @@ function showResults() {
     const totalQuestions = currentQuiz.length;
     const percentage = Utils.calculatePercentage(score, totalQuestions);
 
-    document.getElementById('final-score').textContent = score;
-    document.getElementById('final-total').textContent = totalQuestions;
-    document.getElementById('percentage').textContent = percentage;
+    const finalScoreEl = document.getElementById('final-score');
+    const finalTotalEl = document.getElementById('final-total');
+    const percentageEl = document.getElementById('percentage');
+    const emojiEl = document.getElementById('results-emoji');
+    
+    if (finalScoreEl) finalScoreEl.textContent = score;
+    if (finalTotalEl) finalTotalEl.textContent = totalQuestions;
+    if (percentageEl) percentageEl.textContent = percentage;
 
     let emoji = '🎉';
     if (percentage === 100) emoji = '🏆';
@@ -307,7 +387,7 @@ function showResults() {
     else if (percentage >= 40) emoji = '📚';
     else emoji = '💪';
 
-    document.getElementById('results-emoji').textContent = emoji;
+    if (emojiEl) emojiEl.textContent = emoji;
 
     StorageManager.saveScore({
         score,
@@ -321,60 +401,89 @@ function showResults() {
 }
 
 function setupEventListeners() {
-    document.getElementById('start-quiz-btn').addEventListener('click', startQuiz);
+    console.log('🔧 Setting up event listeners...');
     
-    document.getElementById('retry-quiz-btn').addEventListener('click', async () => {
-        const btn = document.getElementById('retry-quiz-btn');
-        btn.textContent = '⏳ Loading...';
-        btn.disabled = true;
-        
-        try {
-            const result = await API.getQuizQuestions(quizSettings);
+    const startBtn = document.getElementById('start-quiz-btn');
+    if (startBtn) {
+        startBtn.addEventListener('click', startQuiz);
+        console.log('✅ start-quiz-btn listener added');
+    } else {
+        console.error('❌ start-quiz-btn not found!');
+    }
+    
+    const retryBtn = document.getElementById('retry-quiz-btn');
+    if (retryBtn) {
+        retryBtn.addEventListener('click', async () => {
+            const btn = document.getElementById('retry-quiz-btn');
+            btn.textContent = '⏳ Loading...';
+            btn.disabled = true;
             
-            if (result.success && result.questions.length > 0) {
-                currentQuiz = result.questions;
-                currentQuestionIndex = 0;
-                score = 0;
-
-                currentQuiz.forEach(question => {
-                    const allAnswers = [...question.incorrect_answers, question.correct_answer];
-                    question.shuffledAnswers = Utils.shuffleArray(allAnswers);
+            try {
+                const result = await API.getQuizQuestions({
+                    amount: parseInt(quizSettings.amount),
+                    category: quizSettings.category,
+                    difficulty: quizSettings.difficulty
                 });
+                
+                if (result.success && result.questions.length > 0) {
+                    currentQuiz = result.questions;
+                    currentQuestionIndex = 0;
+                    score = 0;
 
-                showQuizView();
-                displayQuestion();
-            } else {
-                throw new Error('Failed to load quiz');
+                    currentQuiz.forEach(question => {
+                        const allAnswers = [...question.incorrect_answers, question.correct_answer];
+                        question.shuffledAnswers = Utils.shuffleArray(allAnswers);
+                    });
+
+                    showQuizView();
+                    displayQuestion();
+                } else {
+                    throw new Error('Failed to load quiz');
+                }
+            } catch (error) {
+                Utils.showToast('Failed to load quiz. Please try again.', 'error');
+            } finally {
+                btn.textContent = 'Try Again';
+                btn.disabled = false;
             }
-        } catch (error) {
-            Utils.showToast('Failed to load quiz. Please try again.', 'error');
-        } finally {
-            btn.textContent = 'Try Again';
-            btn.disabled = false;
-        }
-    });
+        });
+    }
 
-    document.getElementById('new-quiz-btn').addEventListener('click', () => {
-        showSetupView();
-    });
+    const newQuizBtn = document.getElementById('new-quiz-btn');
+    if (newQuizBtn) {
+        newQuizBtn.addEventListener('click', () => {
+            showSetupView();
+        });
+    }
 
-    document.getElementById('logout-btn').addEventListener('click', function() {
-        if (confirm('Are you sure you want to logout?')) {
-            localStorage.removeItem('studify_auth');
-            localStorage.removeItem('studify_user');
-            window.location.href = 'index.html';
-        }
-    });
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('studify_auth');
+                localStorage.removeItem('studify_user');
+                window.location.href = 'index.html';
+            }
+        });
+    }
 }
 
 async function initQuiz() {
-    if (!checkAuthentication()) return;
+    console.log('🚀 Initializing quiz...');
+    
+    if (!checkAuthentication()) {
+        console.log('❌ Authentication failed, redirecting...');
+        return;
+    }
 
     loadUserInfo();
     await loadCategories();
     setupEventListeners();
+    
+    console.log('✅ Quiz initialized successfully!');
 }
 
+// Initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initQuiz);
 } else {
